@@ -1,0 +1,7 @@
+{
+  "dispatch_ops_per_sec_min": 400,
+  "routing_ops_per_sec_min": 500,
+  "routing_p95_ms_max": 8,
+  "json_roundtrip_ops_per_sec_min": 2000,
+  "outbox_relay_ops_per_sec_min": 500
+}
