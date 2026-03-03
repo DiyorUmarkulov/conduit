@@ -10,9 +10,14 @@
   },
   "scripts": {
     "build": "pnpm -r build",
+    "build:all": "./scripts/build-all.sh",
     "test": "pnpm -r test",
+    "test:all": "./scripts/test-all.sh",
     "typecheck": "pnpm -r typecheck",
-    "clean": "pnpm -r clean"
+    "clean": "pnpm -r clean",
+    "docs:api": "./scripts/generate-api-docs.sh",
+    "deps:circular": "./scripts/check-circular-deps.sh",
+    "publish:dry-run": "./scripts/publish-dry-run.sh"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

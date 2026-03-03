@@ -18,9 +18,16 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "paths": {
+      "@conduit/express": ["packages/express/src/index.ts"],
       "@conduit/core": ["packages/core/src/index.ts"],
+      "@conduit/nestjs": ["packages/nestjs/src/index.ts"],
+      "@conduit/provider-kafka": ["packages/provider-kafka/src/index.ts"],
       "@conduit/provider-inmemory": ["packages/provider-inmemory/src/index.ts"],
+      "@conduit/provider-nats": ["packages/provider-nats/src/index.ts"],
       "@conduit/provider-outbox": ["packages/provider-outbox/src/index.ts"],
+      "@conduit/provider-rabbitmq": ["packages/provider-rabbitmq/src/index.ts"],
+      "@conduit/schema-registry": ["packages/schema-registry/src/index.ts"],
+      "@conduit/testing": ["packages/testing/src/index.ts"],
       "@conduit/cli": ["packages/cli/src/index.ts"]
     },
     "lib": ["ES2022"]

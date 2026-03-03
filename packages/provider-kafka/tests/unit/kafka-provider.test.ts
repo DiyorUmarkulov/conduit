@@ -32,7 +32,7 @@ describe("KafkaProvider", () => {
       send: async (message) => {
         sent.push({
           topic: message.topic,
-          key: message.key,
+          ...(message.key ? { key: message.key } : {}),
           value: message.value
         });
       }

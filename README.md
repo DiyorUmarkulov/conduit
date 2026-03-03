@@ -27,6 +27,24 @@ Conduit is an operation bus framework for backend command/event delivery with ex
   - partition-aware ordered relay for high parallelism
   - DB adapters: in-memory, PostgreSQL, MySQL, SQLite
   - SQL migrations for `conduit_outbox` and `conduit_outbox_dlq`
+- `@conduit/provider-kafka`
+  - Kafka producer-based transport adapter
+  - optional lag reader for backpressure integration
+- `@conduit/provider-rabbitmq`
+  - RabbitMQ exchange/routing transport adapter
+  - optional backlog reader for pressure control
+- `@conduit/provider-nats`
+  - NATS publish transport adapter
+  - optional backlog reader integration
+- `@conduit/schema-registry`
+  - local and Confluent-compatible registry adapters
+  - compatibility checker and schema diff utilities
+- `@conduit/testing`
+  - fake provider + fake DLQ + envelope factories for tests
+- `@conduit/nestjs`
+  - decorators and module helpers for Conduit wiring in NestJS apps
+- `@conduit/express`
+  - request middleware for bus injection and trace extraction
 - `@conduit/cli`
   - `routes list`
   - `dlq inspect`
