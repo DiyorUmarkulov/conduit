@@ -1,0 +1,22 @@
+export type SchemaFormat = "JSON_SCHEMA" | "PROTOBUF";
+
+export interface RegisteredSchema {
+  subject: string;
+  version: number;
+  format: SchemaFormat;
+  schema: unknown;
+  created_at: string;
+}
+
+export interface RegisterSchemaInput {
+  subject: string;
+  format: SchemaFormat;
+  schema: unknown;
+}
+
+export interface ISchemaRegistry {
+  register(input: RegisterSchemaInput): Promise<RegisteredSchema>;
+  get(subject: string, version: number): Promise<RegisteredSchema | undefined>;
+  getLatest(subject: string): Promise<RegisteredSchema | undefined>;
+  list(subject: string): Promise<RegisteredSchema[]>;
+}

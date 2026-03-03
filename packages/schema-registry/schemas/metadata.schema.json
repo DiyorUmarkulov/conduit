@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["trace_id", "source_service"],
+  "properties": {
+    "trace_id": { "type": "string" },
+    "source_service": { "type": "string" }
+  }
+}

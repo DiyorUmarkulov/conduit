@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["operation_id", "operation_type", "operation_name", "schema_version", "payload", "metadata", "created_at"],
+  "properties": {
+    "operation_id": { "type": "string" },
+    "operation_type": { "type": "string" },
+    "operation_name": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "payload": {},
+    "metadata": { "type": "object" },
+    "created_at": { "type": "string" }
+  }
+}
