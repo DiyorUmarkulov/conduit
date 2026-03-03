@@ -1,0 +1,6 @@
+flowchart LR
+  A[dispatch envelope] --> B[route resolve]
+  B --> C[middleware pipeline]
+  C --> D[provider dispatch]
+  D --> E[handler execution]
+  E --> F[success or retry/dlq]

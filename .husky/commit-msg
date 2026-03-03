@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+commit_message_file="$1"
+message="$(cat "$commit_message_file")"
+
+if ! [[ "$message" =~ ^(feat|fix|docs|chore|refactor|test|ci|perf)(\(.+\))?:\ .+ ]]; then
+  echo "Commit message must follow Conventional Commits" >&2
+  exit 1
+fi

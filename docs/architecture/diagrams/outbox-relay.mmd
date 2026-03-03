@@ -1,0 +1,6 @@
+flowchart LR
+  DB[(conduit_outbox)] --> Claim[claim pending]
+  Claim --> Relay[relay worker]
+  Relay --> Handler[handler]
+  Relay --> Retry[retry schedule]
+  Relay --> DLQ[(conduit_outbox_dlq)]
