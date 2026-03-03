@@ -1429,24 +1429,24 @@ conduit/
 └── README.md
 
 Что публикуется на npm и что нет:
-┌─────────────────────────────────────┬──────────────────┐
-│  Пакет                              │  Публикуется     │
-├─────────────────────────────────────┼──────────────────┤
-│  @conduit/core                      │  ✅              │
-│  @conduit/provider-inmemory         │  ✅              │
-│  @conduit/provider-outbox           │  ✅              │
-│  @conduit/provider-kafka            │  ✅              │
-│  @conduit/provider-rabbitmq         │  ✅              │
-│  @conduit/provider-nats             │  ✅              │
-│  @conduit/schema-registry           │  ✅              │
-│  @conduit/testing                   │  ✅              │
-│  @conduit/nestjs                    │  ✅              │
-│  @conduit/express                   │  ✅              │
-│  @conduit/cli                       │  ✅              │
-├─────────────────────────────────────┼──────────────────┤
-│  @conduit/eslint-config (tools)     │  ❌ private      │
-│  @conduit/tsconfig (tools)          │  ❌ private      │
-│  benchmarks/                        │  ❌ private      │
-│  e2e/                               │  ❌ private      │
-│  docs/                              │  ❌ (GitHub Pages│
-└─────────────────────────────────────┴──────────────────┘
+┌─────────────────────────────────────┬───────────────────┐
+│  Пакет                              │  Публикуется      │
+├─────────────────────────────────────┼───────────────────┤
+│  @conduit/core                      │  ✅               │
+│  @conduit/provider-inmemory         │  ✅               │
+│  @conduit/provider-outbox           │  ✅               │
+│  @conduit/provider-kafka            │  ✅               │
+│  @conduit/provider-rabbitmq         │  ✅               │
+│  @conduit/provider-nats             │  ✅               │
+│  @conduit/schema-registry           │  ✅               │
+│  @conduit/testing                   │  ✅               │
+│  @conduit/nestjs                    │  ✅               │
+│  @conduit/express                   │  ✅               │
+│  @conduit/cli                       │  ✅               │
+├─────────────────────────────────────┼───────────────────┤
+│  @conduit/eslint-config (tools)     │  ❌ private       │
+│  @conduit/tsconfig (tools)          │  ❌ private       │
+│  benchmarks/                        │  ❌ private       │
+│  e2e/                               │  ❌ private       │
+│  docs/                              │  ❌ (GitHub Pages)│
+└─────────────────────────────────────┴───────────────────┘

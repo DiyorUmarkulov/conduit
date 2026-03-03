@@ -30,12 +30,18 @@ Conduit is an operation bus framework for backend command/event delivery with ex
 - `@conduit/provider-kafka`
   - Kafka producer-based transport adapter
   - optional lag reader for backpressure integration
+  - built-in retry/timeout/circuit-breaker/in-flight protection
+  - KafkaJS adapter (`KafkaJsProducerClient`, `KafkaJsLagReader`)
 - `@conduit/provider-rabbitmq`
   - RabbitMQ exchange/routing transport adapter
   - optional backlog reader for pressure control
+  - built-in retry/timeout/circuit-breaker/in-flight protection
+  - amqplib adapter (`AmqplibPublisherClient`)
 - `@conduit/provider-nats`
   - NATS publish transport adapter
   - optional backlog reader integration
+  - built-in retry/timeout/circuit-breaker/in-flight protection
+  - nats.js adapter (`NatsJsClient`)
 - `@conduit/schema-registry`
   - local and Confluent-compatible registry adapters
   - compatibility checker and schema diff utilities
