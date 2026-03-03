@@ -31,7 +31,7 @@ jobs:
 
   e2e-brokers:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,4 +51,8 @@ jobs:
         run: pnpm install --frozen-lockfile=false
 
       - name: Run e2e (broker stack)
+        env:
+          CONDUIT_E2E_BROKER_BATCH: "100"
+          CONDUIT_E2E_BROKER_CONSUME_TIMEOUT_MS: "20000"
+          CONDUIT_E2E_BROKER_BATCH_TIMEOUT_MS: "60000"
         run: pnpm e2e:brokers

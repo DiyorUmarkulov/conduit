@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import { describe, expect, it } from "vitest";
 
 import { ConduitBuilder, EnvelopeBuilder } from "@conduit/core";
@@ -11,308 +9,28 @@ import {
 } from "@conduit/provider-rabbitmq";
 
 import {
+  loadAmqplib,
+  loadKafkaJs,
+  loadNats,
+  parseEnvelopeMessage,
+  uniqueSuffix,
+  withTimeout
+} from "../infrastructure/broker-clients.js";
+import {
   brokerEndpoints,
   skipIfNoBrokerStack
 } from "../infrastructure/testcontainers-setup.js";
 
-const withTimeout = async <T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  label: string
-): Promise<T> =>
-  new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
-    }, timeoutMs);
-
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error) => {
-        clearTimeout(timer);
-        reject(error);
-      }
-    );
-  });
-
-const uniqueSuffix = (): string => `${Date.now()}-${randomUUID().slice(0, 8)}`;
-
-const loadKafkaJs = async (): Promise<{
-  Kafka: new (options: {
-    brokers: string[];
-    clientId: string;
-  }) => {
-    admin(): {
-      connect(): Promise<void>;
-      disconnect(): Promise<void>;
-      createTopics(options: {
-        waitForLeaders: boolean;
-        topics: Array<{ topic: string; numPartitions: number; replicationFactor: number }>;
-      }): Promise<boolean>;
-    };
-    producer(): {
-      connect(): Promise<void>;
-      disconnect(): Promise<void>;
-      send(input: {
-        topic: string;
-        messages: Array<{
-          key?: string;
-          value: string | Buffer;
-          headers?: Record<string, string>;
-        }>;
-      }): Promise<unknown>;
-    };
-    consumer(options: { groupId: string }): {
-      connect(): Promise<void>;
-      disconnect(): Promise<void>;
-      subscribe(options: { topic: string; fromBeginning: boolean }): Promise<void>;
-      run(options: {
-        eachMessage(args: {
-          message: { value?: Buffer | null };
-        }): Promise<void>;
-      }): Promise<void>;
-      stop(): Promise<void>;
-    };
-  };
-}> => {
-  try {
-    return (await import("kafkajs")) as {
-      Kafka: new (options: {
-        brokers: string[];
-        clientId: string;
-      }) => {
-        admin(): {
-          connect(): Promise<void>;
-          disconnect(): Promise<void>;
-          createTopics(options: {
-            waitForLeaders: boolean;
-            topics: Array<{
-              topic: string;
-              numPartitions: number;
-              replicationFactor: number;
-            }>;
-          }): Promise<boolean>;
-        };
-        producer(): {
-          connect(): Promise<void>;
-          disconnect(): Promise<void>;
-          send(input: {
-            topic: string;
-            messages: Array<{
-              key?: string;
-              value: string | Buffer;
-              headers?: Record<string, string>;
-            }>;
-          }): Promise<unknown>;
-        };
-        consumer(options: { groupId: string }): {
-          connect(): Promise<void>;
-          disconnect(): Promise<void>;
-          subscribe(options: {
-            topic: string;
-            fromBeginning: boolean;
-          }): Promise<void>;
-          run(options: {
-            eachMessage(args: {
-              message: { value?: Buffer | null };
-            }): Promise<void>;
-          }): Promise<void>;
-          stop(): Promise<void>;
-        };
-      };
-    };
-  } catch (error) {
-    throw new Error(
-      `kafkajs is required for broker e2e tests. Install with pnpm add -Dw kafkajs. Original error: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-};
-
-const loadAmqplib = async (): Promise<{
-  connect(url: string): Promise<{
-    createConfirmChannel(): Promise<{
-      publish(
-        exchange: string,
-        routingKey: string,
-        content: Buffer,
-        options?: {
-          headers?: Record<string, string>;
-          persistent?: boolean;
-          messageId?: string;
-          contentType?: string;
-        }
-      ): boolean;
-      waitForConfirms(): Promise<void>;
-      close(): Promise<void>;
-    }>;
-    createChannel(): Promise<{
-      assertExchange(
-        exchange: string,
-        type: string,
-        options?: { durable?: boolean }
-      ): Promise<unknown>;
-      assertQueue(
-        queue: string,
-        options?: { durable?: boolean; exclusive?: boolean; autoDelete?: boolean }
-      ): Promise<{ queue: string }>;
-      bindQueue(queue: string, exchange: string, routingKey: string): Promise<unknown>;
-      consume(
-        queue: string,
-        onMessage: (message: { content: Buffer } | null) => void,
-        options?: { noAck?: boolean }
-      ): Promise<{ consumerTag: string }>;
-      ack(message: { content: Buffer }): void;
-      close(): Promise<void>;
-    }>;
-    close(): Promise<void>;
-  }>;
-}> => {
-  try {
-    const module = (await import("amqplib")) as {
-      connect?: (url: string) => Promise<unknown>;
-      default?: { connect?: (url: string) => Promise<unknown> };
-    };
-
-    const connect =
-      typeof module.connect === "function"
-        ? module.connect
-        : module.default?.connect;
-
-    if (!connect) {
-      throw new Error("amqplib.connect export not found");
-    }
-
-    return {
-      connect: async (url: string) =>
-        (await connect(url)) as {
-          createConfirmChannel(): Promise<{
-            publish(
-              exchange: string,
-              routingKey: string,
-              content: Buffer,
-              options?: {
-                headers?: Record<string, string>;
-                persistent?: boolean;
-                messageId?: string;
-                contentType?: string;
-              }
-            ): boolean;
-            waitForConfirms(): Promise<void>;
-            close(): Promise<void>;
-          }>;
-          createChannel(): Promise<{
-            assertExchange(
-              exchange: string,
-              type: string,
-              options?: { durable?: boolean }
-            ): Promise<unknown>;
-            assertQueue(
-              queue: string,
-              options?: { durable?: boolean; exclusive?: boolean; autoDelete?: boolean }
-            ): Promise<{ queue: string }>;
-            bindQueue(queue: string, exchange: string, routingKey: string): Promise<unknown>;
-            consume(
-              queue: string,
-              onMessage: (message: { content: Buffer } | null) => void,
-              options?: { noAck?: boolean }
-            ): Promise<{ consumerTag: string }>;
-            ack(message: { content: Buffer }): void;
-            close(): Promise<void>;
-          }>;
-          close(): Promise<void>;
-        }
-    };
-  } catch (error) {
-    throw new Error(
-      `amqplib is required for broker e2e tests. Install with pnpm add -Dw amqplib. Original error: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-};
-
-const loadNats = async (): Promise<{
-  connect(options: { servers: string; name: string }): Promise<{
-    publish(
-      subject: string,
-      payload?: Uint8Array,
-      options?: { headers?: { set(key: string, value: string): void } }
-    ): void;
-    flush(): Promise<void>;
-    subscribe(
-      subject: string,
-      options: { max: number }
-    ): AsyncIterable<{ data: Uint8Array }>;
-    close(): Promise<void>;
-  }>;
-  headers: () => { set(key: string, value: string): void };
-  StringCodec: () => { decode(data: Uint8Array): string };
-}> => {
-  try {
-    const module = (await import("nats")) as {
-      connect?: (options: { servers: string; name: string }) => Promise<unknown>;
-      headers?: () => { set(key: string, value: string): void };
-      StringCodec?: () => { decode(data: Uint8Array): string };
-      default?: {
-        connect?: (options: { servers: string; name: string }) => Promise<unknown>;
-        headers?: () => { set(key: string, value: string): void };
-        StringCodec?: () => { decode(data: Uint8Array): string };
-      };
-    };
-
-    const connect =
-      typeof module.connect === "function"
-        ? module.connect
-        : module.default?.connect;
-    const headers =
-      typeof module.headers === "function"
-        ? module.headers
-        : module.default?.headers;
-    const StringCodec =
-      typeof module.StringCodec === "function"
-        ? module.StringCodec
-        : module.default?.StringCodec;
-
-    if (!connect || !headers || !StringCodec) {
-      throw new Error("nats exports connect/headers/StringCodec are not available");
-    }
-
-    return {
-      connect: async (options: { servers: string; name: string }) =>
-        (await connect(options)) as {
-          publish(
-            subject: string,
-            payload?: Uint8Array,
-            options?: { headers?: { set(key: string, value: string): void } }
-          ): void;
-          flush(): Promise<void>;
-          subscribe(
-            subject: string,
-            options: { max: number }
-          ): AsyncIterable<{ data: Uint8Array }>;
-          close(): Promise<void>;
-        },
-      headers,
-      StringCodec
-    };
-  } catch (error) {
-    throw new Error(
-      `nats is required for broker e2e tests. Install with pnpm add -Dw nats. Original error: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-};
+const consumeTimeoutMs = Number.parseInt(
+  process.env.CONDUIT_E2E_BROKER_CONSUME_TIMEOUT_MS ?? "15000",
+  10
+);
 
 describe("E2E broker transports", () => {
   it.skipIf(skipIfNoBrokerStack())(
     "publishes event envelope to Kafka topic via KafkaProvider",
     async () => {
-      const kafkajs = await loadKafkaJs();
+      const kafkaJs = await loadKafkaJs();
       const suffix = uniqueSuffix();
       const topic = `conduit.e2e.kafka.${suffix}`;
       const operationName = `e2e.kafka.${suffix}`;
@@ -321,7 +39,7 @@ describe("E2E broker transports", () => {
         quantity: 7
       };
 
-      const kafka = new kafkajs.Kafka({
+      const kafka = new kafkaJs.Kafka({
         brokers: [brokerEndpoints.kafka_bootstrap],
         clientId: `conduit-e2e-kafka-${suffix}`
       });
@@ -352,7 +70,7 @@ describe("E2E broker transports", () => {
         });
 
         let resolved = false;
-        const received = new Promise<string>((resolve) => {
+        const consumed = new Promise<string>((resolve) => {
           void consumer.run({
             eachMessage: async ({ message }) => {
               if (resolved) {
@@ -385,13 +103,8 @@ describe("E2E broker transports", () => {
 
         expect(dispatchResult.status).toBe("QUEUED");
 
-        const rawMessage = await withTimeout(received, 15_000, "Kafka consume");
-        const decoded = JSON.parse(rawMessage) as {
-          envelope: {
-            operation_name: string;
-            payload: unknown;
-          };
-        };
+        const rawMessage = await withTimeout(consumed, consumeTimeoutMs, "Kafka consume");
+        const decoded = parseEnvelopeMessage(rawMessage);
 
         expect(decoded.envelope.operation_name).toBe(operationName);
         expect(decoded.envelope.payload).toEqual(payload);
@@ -424,20 +137,16 @@ describe("E2E broker transports", () => {
         await consumerChannel.assertExchange("conduit.operations", "topic", {
           durable: true
         });
-        const assertedQueue = await consumerChannel.assertQueue("", {
+        const queue = await consumerChannel.assertQueue("", {
           durable: false,
           exclusive: true,
           autoDelete: true
         });
-        await consumerChannel.bindQueue(
-          assertedQueue.queue,
-          "conduit.operations",
-          routingKey
-        );
+        await consumerChannel.bindQueue(queue.queue, "conduit.operations", routingKey);
 
         const consumed = new Promise<string>((resolve) => {
           void consumerChannel.consume(
-            assertedQueue.queue,
+            queue.queue,
             (message) => {
               if (!message) {
                 return;
@@ -470,13 +179,8 @@ describe("E2E broker transports", () => {
 
         expect(dispatchResult.status).toBe("QUEUED");
 
-        const rawMessage = await withTimeout(consumed, 15_000, "RabbitMQ consume");
-        const decoded = JSON.parse(rawMessage) as {
-          envelope: {
-            operation_name: string;
-            payload: unknown;
-          };
-        };
+        const rawMessage = await withTimeout(consumed, consumeTimeoutMs, "RabbitMQ consume");
+        const decoded = parseEnvelopeMessage(rawMessage);
 
         expect(decoded.envelope.operation_name).toBe(operationName);
         expect(decoded.envelope.payload).toEqual(payload);
@@ -539,13 +243,8 @@ describe("E2E broker transports", () => {
 
         expect(dispatchResult.status).toBe("QUEUED");
 
-        const rawMessage = await withTimeout(consumed, 15_000, "NATS consume");
-        const decoded = JSON.parse(rawMessage) as {
-          envelope: {
-            operation_name: string;
-            payload: unknown;
-          };
-        };
+        const rawMessage = await withTimeout(consumed, consumeTimeoutMs, "NATS consume");
+        const decoded = parseEnvelopeMessage(rawMessage);
 
         expect(decoded.envelope.operation_name).toBe(operationName);
         expect(decoded.envelope.payload).toEqual(payload);
