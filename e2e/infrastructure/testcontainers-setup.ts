@@ -31,6 +31,8 @@ export const brokerEndpoints: BrokerEndpoints = {
 export const shouldUseBrokerStack = (): boolean =>
   process.env.CONDUIT_E2E_BROKERS === "1";
 
+let stackStarted = false;
+
 const dockerCompose = async (args: string[]): Promise<void> => {
   await execFileAsync("docker", ["compose", "-f", composeFile, ...args], {
     env: {
@@ -46,7 +48,12 @@ export const startBrokerStack = async (): Promise<void> => {
     return;
   }
 
+  if (stackStarted) {
+    return;
+  }
+
   await dockerCompose(["up", "-d", "--wait"]);
+  stackStarted = true;
 };
 
 export const stopBrokerStack = async (): Promise<void> => {
@@ -54,7 +61,12 @@ export const stopBrokerStack = async (): Promise<void> => {
     return;
   }
 
+  if (!stackStarted) {
+    return;
+  }
+
   await dockerCompose(["down", "-v"]);
+  stackStarted = false;
 };
 
 export const skipIfNoBrokerStack = (): boolean => !shouldUseBrokerStack();

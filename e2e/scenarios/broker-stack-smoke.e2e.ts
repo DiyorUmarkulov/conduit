@@ -1,11 +1,9 @@
 import { Socket } from "node:net";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { describe, it } from "vitest";
 
 import {
   brokerEndpoints,
-  skipIfNoBrokerStack,
-  startBrokerStack,
-  stopBrokerStack
+  skipIfNoBrokerStack
 } from "../infrastructure/testcontainers-setup.js";
 
 const parseHostAndPort = (value: string): { host: string; port: number } => {
@@ -82,14 +80,6 @@ const assertTcpReachable = async (
   });
 
 describe("E2E broker-stack smoke", () => {
-  beforeAll(async () => {
-    await startBrokerStack();
-  });
-
-  afterAll(async () => {
-    await stopBrokerStack();
-  });
-
   it.skipIf(skipIfNoBrokerStack())(
     "accepts TCP connections for all configured broker endpoints",
     async () => {

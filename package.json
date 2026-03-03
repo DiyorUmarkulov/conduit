@@ -24,7 +24,10 @@
     "publish:dry-run": "./scripts/publish-dry-run.sh"
   },
   "devDependencies": {
+    "amqplib": "^0.10.5",
     "@types/node": "^22.13.10",
+    "kafkajs": "^2.2.4",
+    "nats": "^2.29.3",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2",
     "vitest": "^3.0.8"
