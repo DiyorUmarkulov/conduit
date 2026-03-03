@@ -36,7 +36,8 @@ Conduit is an operation bus framework for backend command/event delivery with ex
   - RabbitMQ exchange/routing transport adapter
   - optional backlog reader for pressure control
   - built-in retry/timeout/circuit-breaker/in-flight protection
-  - amqplib adapter (`AmqplibPublisherClient`)
+  - amqplib adapters (`AmqplibPublisherClient`, `PooledAmqplibPublisherClient`)
+  - channel pool with reconnect-aware lifecycle (`RabbitMQChannelPool`)
 - `@conduit/provider-nats`
   - NATS publish transport adapter
   - optional backlog reader integration
