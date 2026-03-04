@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/cli",
+  "name": "@theconduit/cli",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "CLI utilities for Conduit operations, routes, and DLQ",
   "license": "MIT",
   "type": "module",

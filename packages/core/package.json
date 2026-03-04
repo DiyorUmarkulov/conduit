@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/core",
+  "name": "@theconduit/core",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Core contracts and router for Conduit operation bus",
   "license": "MIT",
   "type": "module",

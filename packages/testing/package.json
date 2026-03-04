@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/testing",
+  "name": "@theconduit/testing",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Testing helpers and fake providers for Conduit",
   "license": "MIT",
   "type": "module",

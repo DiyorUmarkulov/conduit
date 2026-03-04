@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/provider-rabbitmq",
+  "name": "@theconduit/provider-rabbitmq",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "RabbitMQ transport provider abstractions for Conduit",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/provider-kafka",
+  "name": "@theconduit/provider-kafka",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Kafka transport provider abstractions for Conduit",
   "license": "MIT",
   "type": "module",

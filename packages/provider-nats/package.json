@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/provider-nats",
+  "name": "@theconduit/provider-nats",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "NATS transport provider abstractions for Conduit",
   "license": "MIT",
   "type": "module",

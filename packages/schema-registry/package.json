@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/schema-registry",
+  "name": "@theconduit/schema-registry",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Schema registry and compatibility checks for Conduit",
   "license": "MIT",
   "type": "module",

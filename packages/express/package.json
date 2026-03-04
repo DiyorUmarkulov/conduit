@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/express",
+  "name": "@theconduit/express",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Express integration helpers for Conduit",
   "license": "MIT",
   "type": "module",

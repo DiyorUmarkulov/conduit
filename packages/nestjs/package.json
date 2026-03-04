@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/nestjs",
+  "name": "@theconduit/nestjs",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "NestJS integration helpers for Conduit",
   "license": "MIT",
   "type": "module",

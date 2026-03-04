@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/provider-outbox",
+  "name": "@theconduit/provider-outbox",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Transactional outbox provider and relay for Conduit",
   "license": "MIT",
   "type": "module",

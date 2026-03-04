@@ -1,6 +1,10 @@
 {
-  "name": "@conduit/provider-inmemory",
+  "name": "@theconduit/provider-inmemory",
   "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "In-memory transport provider for Conduit",
   "license": "MIT",
   "type": "module",
