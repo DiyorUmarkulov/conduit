@@ -7,6 +7,7 @@ import type {
   OutboxRecordFilter,
   OutboxRetryUpdate
 } from "../outbox-record.js";
+import { OUTBOX_PARTITION_ORDERING } from "../outbox-record.js";
 
 export interface SqliteResult {
   changes: number;
@@ -108,7 +109,7 @@ export class SqliteOutboxAdapter implements IOutboxDbAdapter {
     const nowIso = options.now.toISOString();
     const limit = Math.max(0, options.limit);
     const partitionOrderingFilter =
-      options.partition_ordering === "BY_PARTITION_KEY"
+      options.partition_ordering === OUTBOX_PARTITION_ORDERING.BY_PARTITION_KEY
         ? `
           AND (
             candidate.partition_key IS NULL

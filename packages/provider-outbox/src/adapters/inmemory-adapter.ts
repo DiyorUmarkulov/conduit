@@ -5,6 +5,7 @@ import type {
   OutboxRecordFilter,
   OutboxRetryUpdate
 } from "../outbox-record.js";
+import { OUTBOX_PARTITION_ORDERING } from "../outbox-record.js";
 import { cloneOutboxRecord } from "../outbox-clone.js";
 
 export class InMemoryOutboxAdapter implements IOutboxDbAdapter {
@@ -55,7 +56,7 @@ export class InMemoryOutboxAdapter implements IOutboxDbAdapter {
 
     const limit = Math.max(0, options.limit);
     const candidates =
-      options.partition_ordering === "BY_PARTITION_KEY"
+      options.partition_ordering === OUTBOX_PARTITION_ORDERING.BY_PARTITION_KEY
         ? this.selectPartitionOrderedCandidates(eligible, limit)
         : eligible.slice(0, limit);
 

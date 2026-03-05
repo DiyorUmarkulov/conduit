@@ -6,6 +6,7 @@ import type {
   RetryConfig,
   RouteConfig
 } from "../types/route.js";
+import { ON_EXHAUSTED_ACTION } from "../types/route.js";
 import type { OperationType } from "../types/operation.js";
 
 export interface RetryBuilderInput {
@@ -25,7 +26,7 @@ export class RouteBuilder {
       operation_name: operationName,
       operation_type: "EVENT",
       provider: "INMEMORY",
-      on_exhausted: "DLQ"
+      on_exhausted: ON_EXHAUSTED_ACTION.DLQ
     };
   }
 

@@ -1,6 +1,9 @@
 import type { OperationEnvelope } from "./envelope.js";
 import type { RegisteredHandler } from "./handler.js";
 import type { RouteConfig } from "./route.js";
+import type { ProviderDispatchStatus } from "./status.js";
+
+export type { ProviderDispatchStatus } from "./status.js";
 
 export interface ProviderDispatchRequest {
   envelope: OperationEnvelope;
@@ -10,7 +13,7 @@ export interface ProviderDispatchRequest {
 }
 
 export interface ProviderDispatchResult {
-  status: "DELIVERED" | "QUEUED";
+  status: ProviderDispatchStatus;
 }
 
 export interface ITransportProvider {

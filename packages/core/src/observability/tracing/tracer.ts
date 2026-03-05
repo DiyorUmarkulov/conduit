@@ -1,6 +1,8 @@
 import { randomBytes } from "node:crypto";
 
-export type SpanStatusCode = "OK" | "ERROR";
+export const SPAN_STATUS_CODES = ["OK", "ERROR"] as const;
+
+export type SpanStatusCode = (typeof SPAN_STATUS_CODES)[number];
 
 export interface SpanContext {
   trace_id: string;

@@ -5,7 +5,7 @@ import type {
   RetryConfig,
   RouteConfig
 } from "@conduit/core";
-import { createUuidV7 } from "@conduit/core";
+import { createUuidV7, PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
 
 import { DispatchResilience, type DispatchResilienceOptions } from "./internal/resilience.js";
 
@@ -38,6 +38,8 @@ export interface RabbitMQProviderOptions {
   random?: () => number;
 }
 
+export const RABBITMQ_PROVIDER_NAME = "RABBITMQ" as const;
+
 const defaultSerializer = (request: ProviderDispatchRequest): string =>
   JSON.stringify({
     envelope: request.envelope,
@@ -59,7 +61,7 @@ const defaultHeaders = (request: ProviderDispatchRequest): Record<string, string
 });
 
 export class RabbitMQProvider implements ITransportProvider {
-  public readonly name = "RABBITMQ";
+  public readonly name = RABBITMQ_PROVIDER_NAME;
 
   private readonly exchange: string;
   private readonly resolveRoutingKey: (request: ProviderDispatchRequest) => string;
@@ -109,7 +111,7 @@ export class RabbitMQProvider implements ITransportProvider {
     );
 
     return {
-      status: "QUEUED"
+      status: PROVIDER_DISPATCH_STATUSES.QUEUED
     };
   }
 

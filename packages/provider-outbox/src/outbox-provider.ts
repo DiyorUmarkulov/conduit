@@ -1,6 +1,7 @@
 import {
   createUuidV7,
   type ITransportProvider,
+  PROVIDER_DISPATCH_STATUSES,
   type ProviderDispatchRequest,
   type ProviderDispatchResult,
   type RegisteredHandler,
@@ -16,8 +17,10 @@ export interface OutboxProviderOptions {
   partition_key_resolver?: (request: ProviderDispatchRequest) => string | undefined;
 }
 
+export const OUTBOX_PROVIDER_NAME = "OUTBOX" as const;
+
 export class OutboxProvider implements ITransportProvider {
-  public readonly name = "OUTBOX";
+  public readonly name = OUTBOX_PROVIDER_NAME;
 
   private readonly now: () => Date;
   private readonly partitionKeyResolver:
@@ -62,7 +65,7 @@ export class OutboxProvider implements ITransportProvider {
 
     await this.adapter.insert(record);
 
-    return { status: "QUEUED" };
+    return { status: PROVIDER_DISPATCH_STATUSES.QUEUED };
   }
 
   public async getBacklogSize(route: RouteConfig): Promise<number> {

@@ -1,4 +1,6 @@
-export type CompatibilityMode = "NONE" | "BACKWARD" | "FULL";
+export const COMPATIBILITY_MODES = ["NONE", "BACKWARD", "FULL"] as const;
+
+export type CompatibilityMode = (typeof COMPATIBILITY_MODES)[number];
 
 export interface CompatibilityResult {
   compatible: boolean;

@@ -1,12 +1,16 @@
-import type { OperationType } from "../../types/operation.js";
-
-import type { ACLEffect, ACLRule } from "./acl-rule.js";
+import {
+  ACL_EFFECT,
+  ACL_OPERATION_TYPE,
+  type ACLEffect,
+  type ACLOperationType,
+  type ACLRule
+} from "./acl-rule.js";
 
 interface ACLRuleDraft {
   effect: ACLEffect;
   source_service: string;
   operation_name: string;
-  operation_type?: OperationType | "ALL";
+  operation_type?: ACLOperationType;
 }
 
 class ACLRuleBuilder {
@@ -17,13 +21,13 @@ class ACLRuleBuilder {
       effect,
       source_service: sourceService,
       operation_name: "*",
-      operation_type: "ALL"
+      operation_type: ACL_OPERATION_TYPE.ALL
     };
   }
 
   public to(
     operationName: string,
-    operationType: OperationType | "ALL" = "ALL"
+    operationType: ACLOperationType = ACL_OPERATION_TYPE.ALL
   ): this {
     this.draft.operation_name = operationName;
     this.draft.operation_type = operationType;
@@ -49,11 +53,11 @@ export class ACLBuilder {
   private readonly rules: ACLRule[] = [];
 
   public allow(sourceService: string): ACLRuleBuilder {
-    return new ACLRuleBuilder("ALLOW", sourceService);
+    return new ACLRuleBuilder(ACL_EFFECT.ALLOW, sourceService);
   }
 
   public deny(sourceService: string): ACLRuleBuilder {
-    return new ACLRuleBuilder("DENY", sourceService);
+    return new ACLRuleBuilder(ACL_EFFECT.DENY, sourceService);
   }
 
   public add(rule: ACLRule | ACLRuleBuilder): this {
@@ -63,10 +67,10 @@ export class ACLBuilder {
 
   public denyAll(): this {
     this.rules.push({
-      effect: "DENY",
+      effect: ACL_EFFECT.DENY,
       source_service: "*",
       operation_name: "*",
-      operation_type: "ALL"
+      operation_type: ACL_OPERATION_TYPE.ALL
     });
     return this;
   }

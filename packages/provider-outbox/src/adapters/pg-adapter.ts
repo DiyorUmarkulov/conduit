@@ -7,6 +7,7 @@ import type {
   OutboxRecordFilter,
   OutboxRetryUpdate
 } from "../outbox-record.js";
+import { OUTBOX_PARTITION_ORDERING } from "../outbox-record.js";
 
 interface PgQueryResult<Row extends object> {
   rows: Row[];
@@ -109,7 +110,7 @@ export class PgOutboxAdapter implements IOutboxDbAdapter {
   public async claimPending(options: OutboxClaimOptions): Promise<OutboxRecord[]> {
     const nowIso = options.now.toISOString();
     const partitionOrderingFilter =
-      options.partition_ordering === "BY_PARTITION_KEY"
+      options.partition_ordering === OUTBOX_PARTITION_ORDERING.BY_PARTITION_KEY
         ? `
           AND (
             candidate.partition_key IS NULL

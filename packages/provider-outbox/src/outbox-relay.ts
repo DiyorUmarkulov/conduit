@@ -1,4 +1,6 @@
 import {
+  BACKOFF_STRATEGY,
+  JITTER_MODE,
   createUuidV7,
   toRetryPolicyFromConfig,
   type DLQEntry,
@@ -7,13 +9,17 @@ import {
 } from "@conduit/core";
 
 import type { IOutboxDbAdapter } from "./adapters/db-adapter.interface.js";
-import type { OutboxRecord } from "./outbox-record.js";
+import {
+  OUTBOX_PARTITION_ORDERING,
+  type OutboxPartitionOrdering,
+  type OutboxRecord
+} from "./outbox-record.js";
 import { OutboxProvider } from "./outbox-provider.js";
 
 export interface OutboxRelayOptions {
   batch_size?: number;
   max_parallelism?: number;
-  partition_ordering?: "NONE" | "BY_PARTITION_KEY";
+  partition_ordering?: OutboxPartitionOrdering;
   now?: () => Date;
   random?: () => number;
   dlq_manager?: IDLQManager;
@@ -29,10 +35,10 @@ export interface OutboxRelayRunStats {
 
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
   max_attempts: 3,
-  strategy: "EXPONENTIAL",
+  strategy: BACKOFF_STRATEGY.EXPONENTIAL,
   initial_delay_ms: 100,
   max_delay_ms: 5_000,
-  jitter: "FULL"
+  jitter: JITTER_MODE.FULL
 };
 
 const asErrorMessage = (error: unknown): string => {
@@ -46,7 +52,7 @@ const asErrorMessage = (error: unknown): string => {
 export class OutboxRelay {
   private readonly batchSize: number;
   private readonly maxParallelism: number;
-  private readonly partitionOrdering: "NONE" | "BY_PARTITION_KEY";
+  private readonly partitionOrdering: OutboxPartitionOrdering;
   private readonly now: () => Date;
   private readonly random: () => number;
 
@@ -57,7 +63,9 @@ export class OutboxRelay {
   ) {
     this.batchSize = Math.max(1, options.batch_size ?? 100);
     this.maxParallelism = Math.max(1, options.max_parallelism ?? 1);
-    this.partitionOrdering = options.partition_ordering ?? "BY_PARTITION_KEY";
+    this.partitionOrdering =
+      options.partition_ordering ??
+      OUTBOX_PARTITION_ORDERING.BY_PARTITION_KEY;
     this.now = options.now ?? (() => new Date());
     this.random = options.random ?? Math.random;
   }
@@ -101,7 +109,7 @@ export class OutboxRelay {
       return;
     }
 
-    if (this.partitionOrdering === "BY_PARTITION_KEY") {
+    if (this.partitionOrdering === OUTBOX_PARTITION_ORDERING.BY_PARTITION_KEY) {
       await this.processRecordsWithPartitionOrdering(records, parallelism, stats);
       return;
     }

@@ -4,6 +4,9 @@ import type {
   ProviderDispatchResult,
   RouteConfig
 } from "@conduit/core";
+import { PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
+
+export const INMEMORY_PROVIDER_NAME = "INMEMORY" as const;
 
 const withTimeout = async <T>(promise: Promise<T>, timeoutMs?: number): Promise<T> => {
   if (!timeoutMs || timeoutMs <= 0) {
@@ -29,7 +32,7 @@ const withTimeout = async <T>(promise: Promise<T>, timeoutMs?: number): Promise<
 };
 
 export class InMemoryProvider implements ITransportProvider {
-  public readonly name = "INMEMORY";
+  public readonly name = INMEMORY_PROVIDER_NAME;
 
   private inFlight = 0;
   private syntheticBacklog = 0;
@@ -49,7 +52,7 @@ export class InMemoryProvider implements ITransportProvider {
         request.timeout_ms
       );
 
-      return { status: "DELIVERED" };
+      return { status: PROVIDER_DISPATCH_STATUSES.DELIVERED };
     } finally {
       this.inFlight -= 1;
     }

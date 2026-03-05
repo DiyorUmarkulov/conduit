@@ -15,9 +15,20 @@ import {
 } from "../types/errors.js";
 import type { OperationEnvelope } from "../types/envelope.js";
 import type { RegisteredHandler } from "../types/handler.js";
-import type { ITransportProvider } from "../types/provider.js";
+import type { ITransportProvider, ProviderDispatchStatus } from "../types/provider.js";
 import type { DispatchResult, HandlerDispatchResult } from "../types/result.js";
-import type { RetryConfig, RouteConfig } from "../types/route.js";
+import {
+  BACKOFF_STRATEGY,
+  JITTER_MODE,
+  ON_EXHAUSTED_ACTION,
+  type RetryConfig,
+  type RouteConfig
+} from "../types/route.js";
+import {
+  DISPATCH_STATUSES,
+  HANDLER_STATUSES,
+  PROVIDER_DISPATCH_STATUSES
+} from "../types/status.js";
 import { HandlerRegistry } from "./handler-registry.js";
 import { RouteRegistry } from "./route-registry.js";
 
@@ -37,10 +48,10 @@ interface RouterDependencies {
 
 const defaultRetryConfig: RetryConfig = {
   max_attempts: 3,
-  strategy: "EXPONENTIAL",
+  strategy: BACKOFF_STRATEGY.EXPONENTIAL,
   initial_delay_ms: 25,
   max_delay_ms: 500,
-  jitter: "FULL"
+  jitter: JITTER_MODE.FULL
 };
 
 const toErrorMessage = (error: unknown): string => {
@@ -106,7 +117,7 @@ export class ConduitRouter {
     if (!passedBackpressure) {
       return {
         operation_id: envelope.operation_id,
-        status: "DROPPED",
+        status: DISPATCH_STATUSES.DROPPED,
         provider: provider.name,
         handler_results: [],
         dropped_reason: "Backpressure policy dropped operation"
@@ -118,7 +129,7 @@ export class ConduitRouter {
     if (handlers.length === 0) {
       return {
         operation_id: envelope.operation_id,
-        status: "DELIVERED",
+        status: DISPATCH_STATUSES.DELIVERED,
         provider: provider.name,
         handler_results: []
       };
@@ -146,8 +157,8 @@ export class ConduitRouter {
     handler: RegisteredHandler
   ): Promise<HandlerDispatchResult> {
     const retryPolicy = toRetryPolicyFromConfig(route.retry, defaultRetryConfig);
-    const dispatchResultRef: { status: "DELIVERED" | "QUEUED" } = {
-      status: "DELIVERED"
+    const dispatchResultRef: { status: ProviderDispatchStatus } = {
+      status: PROVIDER_DISPATCH_STATUSES.DELIVERED
     };
 
     try {
@@ -202,18 +213,20 @@ export class ConduitRouter {
       return {
         handler_id: handler.id,
         status:
-          dispatchResultRef.status === "QUEUED" ? "QUEUED" : "DELIVERED",
+          dispatchResultRef.status === PROVIDER_DISPATCH_STATUSES.QUEUED
+            ? HANDLER_STATUSES.QUEUED
+            : HANDLER_STATUSES.DELIVERED,
         attempts: executionResult.attempts
       };
     } catch (error) {
-      if (route.on_exhausted === "RAISE") {
+      if (route.on_exhausted === ON_EXHAUSTED_ACTION.RAISE) {
         throw error;
       }
 
-      if (route.on_exhausted === "LOG_AND_DROP") {
+      if (route.on_exhausted === ON_EXHAUSTED_ACTION.LOG_AND_DROP) {
         return {
           handler_id: handler.id,
-          status: "DROPPED",
+          status: HANDLER_STATUSES.DROPPED,
           attempts: this.extractAttempts(error),
           error: toErrorMessage(error)
         };
@@ -240,7 +253,7 @@ export class ConduitRouter {
 
       return {
         handler_id: handler.id,
-        status: "DLQ",
+        status: HANDLER_STATUSES.DLQ,
         attempts,
         error: toErrorMessage(error)
       };
@@ -292,37 +305,37 @@ export class ConduitRouter {
   }
 
   private resolveOverallStatus(results: HandlerDispatchResult[]): DispatchResult["status"] {
-    if (results.some((result) => result.status === "DLQ")) {
-      return "DLQ";
+    if (results.some((result) => result.status === HANDLER_STATUSES.DLQ)) {
+      return DISPATCH_STATUSES.DLQ;
     }
 
-    if (results.some((result) => result.status === "DROPPED")) {
-      return "DROPPED";
+    if (results.some((result) => result.status === HANDLER_STATUSES.DROPPED)) {
+      return DISPATCH_STATUSES.DROPPED;
     }
 
-    if (results.some((result) => result.status === "FAILED")) {
-      return "DROPPED";
+    if (results.some((result) => result.status === HANDLER_STATUSES.FAILED)) {
+      return DISPATCH_STATUSES.DROPPED;
     }
 
-    if (results.some((result) => result.status === "QUEUED")) {
-      return "QUEUED";
+    if (results.some((result) => result.status === HANDLER_STATUSES.QUEUED)) {
+      return DISPATCH_STATUSES.QUEUED;
     }
 
-    return "DELIVERED";
+    return DISPATCH_STATUSES.DELIVERED;
   }
 
   private async handleExpiredEnvelope(
     route: RouteConfig,
     envelope: OperationEnvelope
   ): Promise<DispatchResult> {
-    if (route.on_exhausted === "RAISE") {
+    if (route.on_exhausted === ON_EXHAUSTED_ACTION.RAISE) {
       throw new ValidationError("Envelope has expired", ["expires_at is in the past"]);
     }
 
-    if (route.on_exhausted === "LOG_AND_DROP") {
+    if (route.on_exhausted === ON_EXHAUSTED_ACTION.LOG_AND_DROP) {
       return {
         operation_id: envelope.operation_id,
-        status: "DROPPED",
+        status: DISPATCH_STATUSES.DROPPED,
         provider: route.provider,
         handler_results: [],
         dropped_reason: "Envelope TTL expired before delivery"
@@ -348,7 +361,7 @@ export class ConduitRouter {
 
     return {
       operation_id: envelope.operation_id,
-      status: "DLQ",
+      status: DISPATCH_STATUSES.DLQ,
       provider: route.provider,
       handler_results: []
     };

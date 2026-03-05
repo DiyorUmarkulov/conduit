@@ -1,4 +1,6 @@
-export type SchemaFormat = "JSON_SCHEMA" | "PROTOBUF";
+export const SCHEMA_FORMATS = ["JSON_SCHEMA", "PROTOBUF"] as const;
+
+export type SchemaFormat = (typeof SCHEMA_FORMATS)[number];
 
 export interface RegisteredSchema {
   subject: string;

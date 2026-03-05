@@ -4,6 +4,9 @@ import type {
   ProviderDispatchResult,
   RouteConfig
 } from "@conduit/core";
+import { PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
+
+export const FAKE_PROVIDER_NAME = "FAKE" as const;
 
 export interface FakeProviderDispatchRecord {
   request: ProviderDispatchRequest;
@@ -11,7 +14,7 @@ export interface FakeProviderDispatchRecord {
 }
 
 export class FakeProvider implements ITransportProvider {
-  public readonly name = "FAKE";
+  public readonly name = FAKE_PROVIDER_NAME;
 
   private readonly records: FakeProviderDispatchRecord[] = [];
   private backlog = 0;
@@ -29,7 +32,7 @@ export class FakeProvider implements ITransportProvider {
     });
 
     return {
-      status: "DELIVERED"
+      status: PROVIDER_DISPATCH_STATUSES.DELIVERED
     };
   }
 

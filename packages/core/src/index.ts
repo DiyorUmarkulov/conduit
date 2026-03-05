@@ -6,6 +6,7 @@ export * from "./dlq/index.js";
 export * from "./envelope/index.js";
 export * from "./middleware/index.js";
 export * from "./observability/index.js";
+export * from "./provider-resilience/index.js";
 export * from "./retry/index.js";
 export * from "./router/index.js";
 export * from "./security/index.js";

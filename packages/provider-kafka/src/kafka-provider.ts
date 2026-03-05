@@ -5,7 +5,7 @@ import type {
   RetryConfig,
   RouteConfig
 } from "@conduit/core";
-import { createUuidV7 } from "@conduit/core";
+import { createUuidV7, PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
 
 import { DispatchResilience, type DispatchResilienceOptions } from "./internal/resilience.js";
 
@@ -38,6 +38,8 @@ export interface KafkaProviderOptions {
   random?: () => number;
 }
 
+export const KAFKA_PROVIDER_NAME = "KAFKA" as const;
+
 const defaultTopicResolver = (request: ProviderDispatchRequest): string =>
   `conduit.${request.route.operation_type.toLowerCase()}.${request.route.operation_name}`;
 
@@ -64,7 +66,7 @@ const defaultHeadersResolver = (
 });
 
 export class KafkaProvider implements ITransportProvider {
-  public readonly name = "KAFKA";
+  public readonly name = KAFKA_PROVIDER_NAME;
 
   private readonly resolveTopic: (request: ProviderDispatchRequest) => string;
   private readonly resolveKey: (request: ProviderDispatchRequest) => string | undefined;
@@ -121,7 +123,7 @@ export class KafkaProvider implements ITransportProvider {
     );
 
     return {
-      status: "QUEUED"
+      status: PROVIDER_DISPATCH_STATUSES.QUEUED
     };
   }
 

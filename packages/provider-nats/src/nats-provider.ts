@@ -5,7 +5,7 @@ import type {
   RetryConfig,
   RouteConfig
 } from "@conduit/core";
-import { createUuidV7 } from "@conduit/core";
+import { createUuidV7, PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
 
 import { DispatchResilience, type DispatchResilienceOptions } from "./internal/resilience.js";
 
@@ -35,6 +35,8 @@ export interface NatsProviderOptions {
   random?: () => number;
 }
 
+export const NATS_PROVIDER_NAME = "NATS" as const;
+
 const defaultSerializer = (request: ProviderDispatchRequest): string =>
   JSON.stringify({
     envelope: request.envelope,
@@ -56,7 +58,7 @@ const defaultHeaders = (request: ProviderDispatchRequest): Record<string, string
 });
 
 export class NatsProvider implements ITransportProvider {
-  public readonly name = "NATS";
+  public readonly name = NATS_PROVIDER_NAME;
 
   private readonly resolveSubject: (request: ProviderDispatchRequest) => string;
   private readonly serialize: (request: ProviderDispatchRequest) => Uint8Array | string;
@@ -102,7 +104,7 @@ export class NatsProvider implements ITransportProvider {
     );
 
     return {
-      status: "QUEUED"
+      status: PROVIDER_DISPATCH_STATUSES.QUEUED
     };
   }
 

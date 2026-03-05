@@ -1,4 +1,8 @@
-import type { RetryConfig } from "../types/route.js";
+import {
+  BACKOFF_STRATEGY,
+  JITTER_MODE,
+  type RetryConfig
+} from "../types/route.js";
 import { ExponentialRetryStrategy } from "./strategies/exponential.strategy.js";
 import { FixedRetryStrategy } from "./strategies/fixed.strategy.js";
 import { LinearRetryStrategy } from "./strategies/linear.strategy.js";
@@ -36,20 +40,20 @@ export const createRetryStrategyFromConfig = (
   random?: () => number
 ): RetryStrategy => {
   switch (config.strategy) {
-    case "FIXED":
+    case BACKOFF_STRATEGY.FIXED:
       return new FixedRetryStrategy(config.initial_delay_ms);
-    case "LINEAR":
+    case BACKOFF_STRATEGY.LINEAR:
       return new LinearRetryStrategy(
         config.initial_delay_ms,
         config.initial_delay_ms,
         config.max_delay_ms
       );
-    case "EXPONENTIAL":
+    case BACKOFF_STRATEGY.EXPONENTIAL:
     default:
       const options = {
         initial_delay_ms: config.initial_delay_ms,
         max_delay_ms: config.max_delay_ms ?? 30_000,
-        jitter: config.jitter ?? "FULL"
+        jitter: config.jitter ?? JITTER_MODE.FULL
       } as const;
 
       return new ExponentialRetryStrategy(

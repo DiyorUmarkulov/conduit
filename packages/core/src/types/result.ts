@@ -1,6 +1,4 @@
-export type DispatchStatus = "DELIVERED" | "QUEUED" | "DLQ" | "DROPPED";
-
-export type HandlerStatus = "DELIVERED" | "QUEUED" | "DLQ" | "DROPPED" | "FAILED";
+import type { DispatchStatus, HandlerStatus } from "./status.js";
 
 export interface HandlerDispatchResult {
   handler_id: string;

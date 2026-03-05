@@ -1,6 +1,6 @@
 import { matchOperationPattern } from "../../router/route-matcher.js";
 
-import type { ACLContext, ACLRule } from "./acl-rule.js";
+import { ACL_EFFECT, ACL_OPERATION_TYPE, type ACLContext, type ACLRule } from "./acl-rule.js";
 
 const matchesPattern = (pattern: string, value: string): boolean => {
   if (pattern === "*") {
@@ -22,7 +22,7 @@ const matchesOperationType = (
   ruleType: ACLRule["operation_type"],
   operationType: ACLContext["operation_type"]
 ): boolean => {
-  if (!ruleType || ruleType === "ALL") {
+  if (!ruleType || ruleType === ACL_OPERATION_TYPE.ALL) {
     return true;
   }
 
@@ -52,7 +52,7 @@ export class ACLEvaluator {
       }
 
       return {
-        allowed: rule.effect === "ALLOW",
+        allowed: rule.effect === ACL_EFFECT.ALLOW,
         matched_rule: rule
       };
     }

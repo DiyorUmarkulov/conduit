@@ -1,5 +1,7 @@
 import type { OperationEnvelope, RouteConfig } from "@conduit/core";
 
+type ValueOf<T extends Record<string, string>> = T[keyof T];
+
 export const OUTBOX_RECORD_STATUSES = [
   "PENDING",
   "PROCESSING",
@@ -8,6 +10,13 @@ export const OUTBOX_RECORD_STATUSES = [
 ] as const;
 
 export type OutboxRecordStatus = (typeof OUTBOX_RECORD_STATUSES)[number];
+
+export const OUTBOX_PARTITION_ORDERING = {
+  NONE: "NONE",
+  BY_PARTITION_KEY: "BY_PARTITION_KEY"
+} as const;
+
+export type OutboxPartitionOrdering = ValueOf<typeof OUTBOX_PARTITION_ORDERING>;
 
 export interface OutboxRecord {
   id: string;
@@ -28,7 +37,7 @@ export interface OutboxRecord {
 export interface OutboxClaimOptions {
   limit: number;
   now: Date;
-  partition_ordering?: "NONE" | "BY_PARTITION_KEY";
+  partition_ordering?: OutboxPartitionOrdering;
 }
 
 export interface OutboxRetryUpdate {

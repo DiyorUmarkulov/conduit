@@ -5,6 +5,7 @@ import {
   type IMetricsRegistry,
   type MetricLabels
 } from "../../observability/index.js";
+import { ON_EXHAUSTED_ACTION } from "../../types/route.js";
 import type { DispatchMiddleware } from "../middleware-pipeline.js";
 
 export interface MetricsMiddlewareOptions {
@@ -48,7 +49,7 @@ export const createMetricsMiddleware = (
         status: "ERROR"
       });
 
-      if (context.route.on_exhausted === "DLQ") {
+      if (context.route.on_exhausted === ON_EXHAUSTED_ACTION.DLQ) {
         dlqTotal.inc(labels, 1);
       }
 
