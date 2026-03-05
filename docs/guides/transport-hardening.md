@@ -1,28 +1,63 @@
 # Transport Hardening Guide
 
-## Goals
-- Keep producer path stable under broker degradation.
-- Avoid unbounded memory growth under spikes.
-- Fail fast when downstream is unhealthy.
+Use resilience controls in broker providers to keep publish path predictable under failures.
 
-## Built-in controls in broker providers
-`@conduit/provider-kafka`, `@conduit/provider-rabbitmq`, `@conduit/provider-nats` now support:
-- retry policy (uses route retry config or provider default)
+## Scope
+
+Applies to:
+
+- `@theconduit/provider-kafka`
+- `@theconduit/provider-rabbitmq`
+- `@theconduit/provider-nats`
+
+## Built-in controls
+
+- route-aware retry policy
 - publish timeout
 - max in-flight guard
-- circuit breaker (failure threshold + reset timeout)
-- for RabbitMQ, pooled confirm channels via `RabbitMQChannelPool` for high concurrent publish throughput
+- circuit breaker
+- backlog accounting (`lag/backlog + in-flight`)
 
-## Recommended production defaults
-- `max_in_flight`: 1_000-10_000 depending on instance size.
-- `publish_timeout_ms`: 200-2_000 based on latency SLO.
-- circuit breaker `failure_threshold`: 10-50.
-- circuit breaker `reset_timeout_ms`: 5_000-30_000.
-- route retry: exponential with full jitter, 3-7 attempts.
-- RabbitMQ channel pool size: start with 4-16 per process and tune by CPU/network saturation.
+RabbitMQ additionally supports pooled confirm channels via `RabbitMQChannelPool`.
+
+## Recommended starting defaults
+
+- `max_in_flight`: `1000-5000`
+- `publish_timeout_ms`: `200-1500`
+- circuit breaker `failure_threshold`: `10-30`
+- circuit breaker `reset_timeout_ms`: `5000-15000`
+- retry policy: exponential + full jitter, 3-7 attempts
+
+Tune per workload and latency SLO.
+
+## Example provider configuration
+
+```ts
+const provider = new KafkaProvider(producerClient, {
+  publish_timeout_ms: 1_000,
+  max_in_flight: 2_000,
+  default_retry: {
+    max_attempts: 5,
+    strategy: "EXPONENTIAL",
+    initial_delay_ms: 50,
+    max_delay_ms: 2_000,
+    jitter: "FULL"
+  },
+  circuit_breaker: {
+    failure_threshold: 20,
+    reset_timeout_ms: 10_000,
+    half_open_max_calls: 2
+  }
+});
+```
 
 ## Failure semantics
-If retries are exhausted, dispatch fails with `DeliveryExhaustedError` and the caller route policy decides follow-up behavior (DLQ, drop, raise).
 
-## Backpressure accounting
-Provider backlog includes both broker lag (if lag reader configured) and local in-flight operations.
+If publish keeps failing after retries, dispatch raises error and route exhaustion policy decides next behavior (`DLQ`, `LOG_AND_DROP`, or `RAISE`).
+
+## Production practices
+
+- Track in-flight and timeout errors separately from broker errors.
+- Add alerts for circuit-breaker open events.
+- Validate overload behavior with load tests before rollout.
+- Keep per-provider dashboards (latency, retries, backlog, DLQ).
