@@ -8,6 +8,7 @@ import type {
 import { createUuidV7, PROVIDER_DISPATCH_STATUSES } from "@conduit/core";
 
 import { DispatchResilience, type DispatchResilienceOptions } from "./internal/resilience.js";
+import { serializeConduitMessage } from "./serialization/json.serializer.js";
 
 export interface KafkaMessage {
   topic: string;
@@ -27,8 +28,11 @@ export interface IKafkaLagReader {
 export interface KafkaProviderOptions {
   topic_resolver?: (request: ProviderDispatchRequest) => string;
   key_resolver?: (request: ProviderDispatchRequest) => string | undefined;
+  partitioner?: (request: ProviderDispatchRequest) => string | undefined;
   headers_resolver?: (request: ProviderDispatchRequest) => Record<string, string>;
-  serializer?: (request: ProviderDispatchRequest) => Uint8Array | string;
+  serializer?: (
+    request: ProviderDispatchRequest
+  ) => Uint8Array | string | Promise<Uint8Array | string>;
   lag_reader?: IKafkaLagReader;
   default_retry?: RetryConfig;
   publish_timeout_ms?: number;
@@ -43,13 +47,7 @@ export const KAFKA_PROVIDER_NAME = "KAFKA" as const;
 const defaultTopicResolver = (request: ProviderDispatchRequest): string =>
   `conduit.${request.route.operation_type.toLowerCase()}.${request.route.operation_name}`;
 
-const defaultSerializer = (request: ProviderDispatchRequest): string =>
-  JSON.stringify({
-    envelope: request.envelope,
-    route: request.route,
-    handler_id: request.handler.id,
-    emitted_at: new Date().toISOString()
-  });
+const defaultSerializer = serializeConduitMessage;
 
 const defaultHeadersResolver = (
   request: ProviderDispatchRequest
@@ -71,7 +69,9 @@ export class KafkaProvider implements ITransportProvider {
   private readonly resolveTopic: (request: ProviderDispatchRequest) => string;
   private readonly resolveKey: (request: ProviderDispatchRequest) => string | undefined;
   private readonly resolveHeaders: (request: ProviderDispatchRequest) => Record<string, string>;
-  private readonly serialize: (request: ProviderDispatchRequest) => Uint8Array | string;
+  private readonly serialize: (
+    request: ProviderDispatchRequest
+  ) => Uint8Array | string | Promise<Uint8Array | string>;
   private readonly resilience: DispatchResilience;
 
   public constructor(
@@ -81,6 +81,7 @@ export class KafkaProvider implements ITransportProvider {
     this.resolveTopic = options.topic_resolver ?? defaultTopicResolver;
     this.resolveKey =
       options.key_resolver ??
+      options.partitioner ??
       ((request) => request.envelope.metadata.idempotency_key ?? request.envelope.operation_id);
     this.resolveHeaders = options.headers_resolver ?? defaultHeadersResolver;
     this.serialize = options.serializer ?? defaultSerializer;
@@ -111,10 +112,12 @@ export class KafkaProvider implements ITransportProvider {
           message_id: createUuidV7()
         };
 
+        const payload = await this.serialize(request);
+
         await this.producer.send({
           topic,
           ...(key ? { key } : {}),
-          value: this.serialize(request),
+          value: payload,
           headers
         });
       },

@@ -1,3 +1,4 @@
+import type { KafkaAdminClient } from "./kafka-admin.js";
 import type { KafkaMessage, IKafkaLagReader, IKafkaProducerClient } from "./kafka-provider.js";
 
 export interface KafkaJsProducerLike {
@@ -19,6 +20,10 @@ export interface KafkaJsAdminLike {
       low?: string;
     }>
   >;
+  listTopics?(): Promise<string[]>;
+  createTopics?(input: { topics: Array<{ topic: string; numPartitions?: number; replicationFactor?: number; configEntries?: Array<{ name: string; value: string }> }>; waitForLeaders?: boolean }): Promise<boolean>;
+  fetchTopicMetadata?(input: { topics: string[] }): Promise<{ topics: Array<{ name: string; partitions: Array<{ partitionId: number; replicas?: Array<unknown> }> }> }>;
+  describeConfigs?(input: { resources: Array<{ type: string; name: string }> }): Promise<Array<{ resources: Array<{ configEntries?: Array<{ name: string; value?: string | null }> }> }>>;
 }
 
 const toBufferValue = (value: string | Uint8Array): string | Buffer => {
@@ -64,5 +69,53 @@ export class KafkaJsLagReader implements IKafkaLagReader {
     }
 
     return lag;
+  }
+}
+
+export class KafkaJsAdminClient implements KafkaAdminClient {
+  public constructor(private readonly admin: KafkaJsAdminLike) {}
+
+  public async listTopics(): Promise<string[]> {
+    if (!this.admin.listTopics) {
+      throw new Error("Kafka admin does not support listTopics");
+    }
+
+    return this.admin.listTopics();
+  }
+
+  public async createTopics(input: { topics: Array<{ topic: string; partitions?: number; replication_factor?: number; config_entries?: Array<{ name: string; value: string }> }>; waitForLeaders?: boolean }): Promise<boolean> {
+    if (!this.admin.createTopics) {
+      throw new Error("Kafka admin does not support createTopics");
+    }
+
+    return this.admin.createTopics({
+      topics: input.topics.map((topic) => ({
+        topic: topic.topic,
+        ...(topic.partitions !== undefined ? { numPartitions: topic.partitions } : {}),
+        ...(topic.replication_factor !== undefined
+          ? { replicationFactor: topic.replication_factor }
+          : {}),
+        ...(topic.config_entries !== undefined
+          ? { configEntries: topic.config_entries }
+          : {})
+      })),
+      ...(input.waitForLeaders !== undefined ? { waitForLeaders: input.waitForLeaders } : {})
+    });
+  }
+
+  public async fetchTopicMetadata(input: { topics: string[] }): Promise<{ topics: Array<{ name: string; partitions: Array<{ partitionId: number; replicas?: Array<unknown> }> }> }> {
+    if (!this.admin.fetchTopicMetadata) {
+      throw new Error("Kafka admin does not support fetchTopicMetadata");
+    }
+
+    return this.admin.fetchTopicMetadata({ topics: input.topics });
+  }
+
+  public async describeConfigs(input: { resources: Array<{ type: \"topic\" | string; name: string }> }): Promise<Array<{ resources: Array<{ configEntries?: Array<{ name: string; value?: string | null }> }> }>> {
+    if (!this.admin.describeConfigs) {
+      return [];
+    }
+
+    return this.admin.describeConfigs({ resources: input.resources });
   }
 }

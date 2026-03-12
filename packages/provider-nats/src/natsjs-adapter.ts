@@ -1,4 +1,5 @@
-import type { INatsClient, NatsPublishInput } from "./nats-provider.js";
+import type { INatsClient, NatsPublishInput } from "./nats-core-provider.js";
+import type { INatsJetStreamClient, NatsJetStreamPublishInput } from "./nats-jetstream-provider.js";
 
 export interface NatsJsHeadersLike {
   set(key: string, value: string): void;
@@ -13,6 +14,16 @@ export interface NatsJsConnectionLike {
     }
   ): void;
   flush(): Promise<void>;
+}
+
+export interface NatsJsJetStreamLike {
+  publish(
+    subject: string,
+    payload?: Uint8Array,
+    options?: {
+      headers?: NatsJsHeadersLike;
+    }
+  ): Promise<unknown>;
 }
 
 export interface NatsJsHeadersFactory {
@@ -46,5 +57,24 @@ export class NatsJsClient implements INatsClient {
       headers
     });
     await this.connection.flush();
+  }
+}
+
+export class NatsJsJetStreamClient implements INatsJetStreamClient {
+  public constructor(
+    private readonly jetstream: NatsJsJetStreamLike,
+    private readonly createHeaders: NatsJsHeadersFactory
+  ) {}
+
+  public async publish(input: NatsJetStreamPublishInput): Promise<unknown> {
+    const headers = this.createHeaders();
+
+    for (const [key, value] of Object.entries(input.headers ?? {})) {
+      headers.set(key, value);
+    }
+
+    return this.jetstream.publish(input.subject, toBytes(input.payload), {
+      headers
+    });
   }
 }

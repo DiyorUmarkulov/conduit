@@ -15,6 +15,7 @@ interface ConfluentSchemaResponse {
   subject: string;
   version: number;
   schema: string;
+  schemaType?: string;
 }
 
 const toConfluentType = (format: SchemaFormat): string => {
@@ -22,7 +23,27 @@ const toConfluentType = (format: SchemaFormat): string => {
     return "PROTOBUF";
   }
 
+  if (format === "AVRO") {
+    return "AVRO";
+  }
+
   return "JSON";
+};
+
+const toSchemaFormat = (schemaType?: string): SchemaFormat => {
+  if (schemaType === "PROTOBUF") {
+    return "PROTOBUF";
+  }
+
+  if (schemaType === "JSON") {
+    return "JSON_SCHEMA";
+  }
+
+  if (schemaType === "AVRO") {
+    return "AVRO";
+  }
+
+  return "AVRO";
 };
 
 export class ConfluentSchemaRegistry implements ISchemaRegistry {
@@ -41,6 +62,7 @@ export class ConfluentSchemaRegistry implements ISchemaRegistry {
     );
 
     return {
+      id: response.id,
       subject: response.subject,
       version: response.version,
       format: input.format,
@@ -59,9 +81,10 @@ export class ConfluentSchemaRegistry implements ISchemaRegistry {
       );
 
       return {
+        id: response.id,
         subject: response.subject,
         version: response.version,
-        format: "JSON_SCHEMA",
+        format: toSchemaFormat(response.schemaType),
         schema: JSON.parse(response.schema),
         created_at: new Date().toISOString()
       };
@@ -77,9 +100,29 @@ export class ConfluentSchemaRegistry implements ISchemaRegistry {
       );
 
       return {
+        id: response.id,
         subject: response.subject,
         version: response.version,
-        format: "JSON_SCHEMA",
+        format: toSchemaFormat(response.schemaType),
+        schema: JSON.parse(response.schema),
+        created_at: new Date().toISOString()
+      };
+    } catch {
+      return undefined;
+    }
+  }
+
+  public async getById(id: number): Promise<RegisteredSchema | undefined> {
+    try {
+      const response = await this.http.get<ConfluentSchemaResponse>(
+        `/schemas/ids/${id}`
+      );
+
+      return {
+        id,
+        subject: String(id),
+        version: 0,
+        format: toSchemaFormat(response.schemaType),
         schema: JSON.parse(response.schema),
         created_at: new Date().toISOString()
       };

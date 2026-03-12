@@ -27,6 +27,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conduit/core": "workspace:*"
+    "@conduit/core": "workspace:*",
+    "@conduit/schema-registry": "workspace:*",
+    "avsc": "^5.7.7"
   }
 }

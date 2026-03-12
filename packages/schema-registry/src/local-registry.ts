@@ -8,12 +8,14 @@ const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 export class LocalSchemaRegistry implements ISchemaRegistry {
   private readonly bySubject = new Map<string, RegisteredSchema[]>();
+  private nextId = 1;
 
   public async register(input: RegisterSchemaInput): Promise<RegisteredSchema> {
     const current = this.bySubject.get(input.subject) ?? [];
     const version = current.length + 1;
 
     const schema: RegisteredSchema = {
+      id: this.nextId,
       subject: input.subject,
       version,
       format: input.format,
@@ -21,6 +23,7 @@ export class LocalSchemaRegistry implements ISchemaRegistry {
       created_at: new Date().toISOString()
     };
 
+    this.nextId += 1;
     current.push(schema);
     this.bySubject.set(input.subject, current);
 
@@ -44,5 +47,16 @@ export class LocalSchemaRegistry implements ISchemaRegistry {
 
   public async list(subject: string): Promise<RegisteredSchema[]> {
     return (this.bySubject.get(subject) ?? []).map((entry) => clone(entry));
+  }
+
+  public async getById(id: number): Promise<RegisteredSchema | undefined> {
+    for (const entries of this.bySubject.values()) {
+      const found = entries.find((entry) => entry.id === id);
+      if (found) {
+        return clone(found);
+      }
+    }
+
+    return undefined;
   }
 }

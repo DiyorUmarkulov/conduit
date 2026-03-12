@@ -7,7 +7,11 @@ const currentDir = dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
-      "@conduit/core": resolve(currentDir, "../core/src/index.ts")
+      "@conduit/core": resolve(currentDir, "../core/src/index.ts"),
+      "@conduit/schema-registry": resolve(
+        currentDir,
+        "../schema-registry/src/index.ts"
+      )
     }
   },
   test: {
