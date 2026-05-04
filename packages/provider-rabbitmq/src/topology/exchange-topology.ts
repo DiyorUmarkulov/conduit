@@ -41,7 +41,7 @@ export class RabbitMQExchangeTopology {
       durable: definition.durable ?? true,
       autoDelete: definition.auto_delete ?? false,
       internal: definition.internal ?? false,
-      arguments: definition.arguments
+      ...(definition.arguments !== undefined ? { arguments: definition.arguments } : {})
     });
   }
 

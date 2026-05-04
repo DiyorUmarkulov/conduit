@@ -63,7 +63,7 @@ const defaultDeserializer = (message: RabbitMQMessage): unknown => {
 };
 
 export class RabbitMQConsumer<TPayload = unknown> {
-  private consumerTag?: string;
+  private consumerTag: string | undefined;
   private running = false;
 
   private readonly options: RabbitMQConsumerOptions<TPayload>;
@@ -104,10 +104,12 @@ export class RabbitMQConsumer<TPayload = unknown> {
         void this.handleMessage(message);
       },
       {
-        noAck: this.options.no_ack,
-        consumerTag: this.options.consumer_tag,
-        exclusive: this.options.exclusive,
-        arguments: this.options.arguments
+        ...(this.options.no_ack !== undefined ? { noAck: this.options.no_ack } : {}),
+        ...(this.options.consumer_tag !== undefined
+          ? { consumerTag: this.options.consumer_tag }
+          : {}),
+        ...(this.options.exclusive !== undefined ? { exclusive: this.options.exclusive } : {}),
+        ...(this.options.arguments !== undefined ? { arguments: this.options.arguments } : {})
       }
     );
 

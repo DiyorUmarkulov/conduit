@@ -1,11 +1,29 @@
 {
   "name": "@theconduit/express",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
-  "description": "Express integration helpers for Conduit",
+  "description": "Express helpers for Conduit: extract incoming trace and correlation headers from HTTP requests so dispatched operation envelopes participate in your existing distributed tracing setup.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "express",
+    "expressjs",
+    "tracing",
+    "middleware",
+    "typescript"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit/tree/main/packages/express",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "packages/express"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,6 +43,6 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conduit/core": "workspace:*"
+    "@conduit/core": "workspace:@theconduit/core@*"
   }
 }

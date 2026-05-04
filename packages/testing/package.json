@@ -1,11 +1,29 @@
 {
   "name": "@theconduit/testing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
-  "description": "Testing helpers and fake providers for Conduit",
+  "description": "Test kit for Conduit: fake transport providers, DLQ doubles, envelope/command/event builders, and wiring helpers so you can exercise handlers and routers without real brokers or databases.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "testing",
+    "test-utils",
+    "mock",
+    "vitest",
+    "typescript"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit/tree/main/packages/testing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "packages/testing"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,6 +45,6 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conduit/core": "workspace:*"
+    "@conduit/core": "workspace:@theconduit/core@*"
   }
 }

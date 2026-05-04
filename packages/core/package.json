@@ -1,11 +1,30 @@
 {
   "name": "@theconduit/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
-  "description": "Core contracts and router for Conduit operation bus",
+  "description": "Conduit core: command/event operation bus with semver-aware routing, envelopes, middleware pipeline, retries, DLQ integration, optional request–reply correlation, and auth helpers. Use with @theconduit/provider-* transports.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "command-bus",
+    "event-bus",
+    "cqrs",
+    "messaging",
+    "outbox",
+    "typescript"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit/tree/main/packages/core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",

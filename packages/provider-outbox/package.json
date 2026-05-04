@@ -1,11 +1,31 @@
 {
   "name": "@theconduit/provider-outbox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
-  "description": "Transactional outbox provider and relay for Conduit",
+  "description": "SQL-backed transactional outbox for Conduit: durable enqueue, relay scheduler with retries and ordering hooks, adapters for PostgreSQL, MySQL, and SQLite, plus SQL migrations for operations tables.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "outbox",
+    "transactional-outbox",
+    "postgres",
+    "mysql",
+    "sqlite",
+    "reliability",
+    "typescript"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit/tree/main/packages/provider-outbox",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "packages/provider-outbox"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,6 +48,6 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conduit/core": "workspace:*"
+    "@conduit/core": "workspace:@theconduit/core@*"
   }
 }

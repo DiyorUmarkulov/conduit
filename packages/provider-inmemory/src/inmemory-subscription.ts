@@ -46,8 +46,8 @@ export class InMemorySubscription {
     this.subscribers.push({
       id,
       pattern: operationName,
-      operation_type: options.operation_type,
-      consumer_group: options.consumer_group,
+      ...(options.operation_type !== undefined ? { operation_type: options.operation_type } : {}),
+      ...(options.consumer_group !== undefined ? { consumer_group: options.consumer_group } : {}),
       handler
     });
 

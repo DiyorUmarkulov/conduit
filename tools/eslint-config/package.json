@@ -2,5 +2,12 @@
   "name": "@theconduit/eslint-config",
   "version": "0.1.0",
   "private": true,
-  "main": "index.js"
+  "description": "Internal ESLint flat-config preset shared by Conduit monorepo packages (not intended for general publishing).",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "tools/eslint-config"
+  }
 }

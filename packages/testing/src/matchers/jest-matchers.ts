@@ -30,7 +30,7 @@ const buildMatcher = (operationType?: OperationType) =>
     };
   };
 
-export const conduitMatchers = {
+export const jestConduitMatchers = {
   toHaveDispatched: buildMatcher(),
   toHaveDispatchedCommand: buildMatcher("COMMAND"),
   toHaveDispatchedEvent: buildMatcher("EVENT")
@@ -41,7 +41,7 @@ export const registerJestMatchers = (): void => {
     throw new Error("Jest expect is not available");
   }
 
-  expect.extend(conduitMatchers);
+  expect.extend(jestConduitMatchers);
 };
 
 declare global {

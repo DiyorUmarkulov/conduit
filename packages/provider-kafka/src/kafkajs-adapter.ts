@@ -111,7 +111,9 @@ export class KafkaJsAdminClient implements KafkaAdminClient {
     return this.admin.fetchTopicMetadata({ topics: input.topics });
   }
 
-  public async describeConfigs(input: { resources: Array<{ type: \"topic\" | string; name: string }> }): Promise<Array<{ resources: Array<{ configEntries?: Array<{ name: string; value?: string | null }> }> }>> {
+  public async describeConfigs(input: {
+    resources: Array<{ type: "topic" | string; name: string }>;
+  }): Promise<Array<{ resources: Array<{ configEntries?: Array<{ name: string; value?: string | null }> }> }>> {
     if (!this.admin.describeConfigs) {
       return [];
     }

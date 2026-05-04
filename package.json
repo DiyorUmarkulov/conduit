@@ -2,7 +2,25 @@
   "name": "conduit-monorepo",
   "private": true,
   "version": "0.1.0",
-  "description": "Conduit operation bus framework",
+  "description": "Monorepo for Conduit (@theconduit/*): a TypeScript command/event operation bus with pluggable transports (in-memory, SQL outbox, Kafka, RabbitMQ, NATS), schema tooling, and framework integrations.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "command-bus",
+    "event-bus",
+    "outbox",
+    "kafka",
+    "typescript",
+    "monorepo"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "packageManager": "pnpm@9.12.3",
   "engines": {

@@ -31,14 +31,14 @@ const buildMatcher = (operationType?: OperationType) =>
     };
   };
 
-export const conduitMatchers = {
+export const vitestConduitMatchers = {
   toHaveDispatched: buildMatcher(),
   toHaveDispatchedCommand: buildMatcher("COMMAND"),
   toHaveDispatchedEvent: buildMatcher("EVENT")
 };
 
 export const registerVitestMatchers = (): void => {
-  expect.extend(conduitMatchers);
+  expect.extend(vitestConduitMatchers);
 };
 
 declare module "vitest" {

@@ -30,7 +30,9 @@ export interface KafkaConsumerClient {
     eachMessage: (payload: KafkaEachMessagePayload) => Promise<void>;
   }): Promise<void>;
   stop?(): Promise<void>;
-  commitOffsets?(offsets: Array<{ topic: string; partition: number; offset: string }>);
+  commitOffsets?(
+    offsets: Array<{ topic: string; partition: number; offset: string }>
+  ): void | Promise<void>;
 }
 
 export interface KafkaConsumerContext {
@@ -93,10 +95,12 @@ export class KafkaConsumer<TMessage = ConduitKafkaMessage> {
     message: TMessage,
     context: KafkaConsumerContext
   ) => Promise<void> | void;
-  private readonly onError?: (
-    error: unknown,
-    context: KafkaConsumerContext & { message?: TMessage }
-  ) => Promise<void> | void;
+  private readonly onError:
+    | ((
+        error: unknown,
+        context: KafkaConsumerContext & { message?: TMessage }
+      ) => Promise<void> | void)
+    | undefined;
 
   public constructor(
     private readonly consumer: KafkaConsumerClient,
@@ -136,10 +140,10 @@ export class KafkaConsumer<TMessage = ConduitKafkaMessage> {
           topic: payload.topic,
           partition: payload.partition,
           offset: payload.message.offset,
-          key: payload.message.key,
-          timestamp: payload.message.timestamp,
-          headers: payload.message.headers,
-          raw: payload
+          raw: payload,
+          ...(payload.message.key !== undefined ? { key: payload.message.key } : {}),
+          ...(payload.message.timestamp !== undefined ? { timestamp: payload.message.timestamp } : {}),
+          ...(payload.message.headers !== undefined ? { headers: payload.message.headers } : {})
         };
 
         try {

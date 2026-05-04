@@ -39,7 +39,7 @@ export class RabbitMQQueueTopology {
       durable: definition.durable ?? true,
       exclusive: definition.exclusive ?? false,
       autoDelete: definition.auto_delete ?? false,
-      arguments: definition.arguments
+      ...(definition.arguments !== undefined ? { arguments: definition.arguments } : {})
     });
   }
 

@@ -1,11 +1,29 @@
 {
   "name": "@theconduit/provider-rabbitmq",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
   },
-  "description": "RabbitMQ transport provider abstractions for Conduit",
+  "description": "RabbitMQ (AMQP) transport for Conduit using amqplib: publish and consume operation envelopes with channel pooling and resilience helpers for production queues and exchanges.",
+  "keywords": [
+    "conduit",
+    "theconduit",
+    "rabbitmq",
+    "amqp",
+    "amqplib",
+    "message-queue",
+    "typescript"
+  ],
+  "homepage": "https://github.com/DiyorUmarkulov/conduit/tree/main/packages/provider-rabbitmq",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "packages/provider-rabbitmq"
+  },
+  "bugs": {
+    "url": "https://github.com/DiyorUmarkulov/conduit/issues"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,6 +45,6 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conduit/core": "workspace:*"
+    "@conduit/core": "workspace:@theconduit/core@*"
   }
 }

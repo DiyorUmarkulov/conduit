@@ -1,5 +1,12 @@
 {
   "name": "@theconduit/tsconfig",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "description": "Shared TypeScript compiler baseline (moduleResolution, strictness, paths) for Conduit workspace packages — internal tooling, not published to npm.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiyorUmarkulov/conduit.git",
+    "directory": "tools/tsconfig-base"
+  }
 }

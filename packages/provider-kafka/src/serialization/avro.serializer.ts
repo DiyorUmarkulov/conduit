@@ -1,4 +1,5 @@
 import type { OperationEnvelope, ProviderDispatchRequest } from "@conduit/core";
+import { asOperationName } from "@conduit/core";
 import type { ISchemaRegistry } from "@conduit/schema-registry";
 import { Type } from "avsc";
 
@@ -80,7 +81,7 @@ const fromAvroRecord = (record: ConduitAvroRecord): ConduitKafkaAvroMessage => {
     envelope: {
       operation_id: record.operation_id,
       operation_type: record.operation_type,
-      operation_name: record.operation_name,
+      operation_name: asOperationName(record.operation_name),
       schema_version: record.schema_version,
       payload,
       metadata,
@@ -131,7 +132,7 @@ export class ConduitAvroSerializer {
     this.subjectResolver = options.subject;
     this.schemaResolver =
       typeof options.schema === "function"
-        ? options.schema
+        ? (options.schema as (request: ProviderDispatchRequest) => object | string)
         : () => options.schema ?? DEFAULT_AVRO_SCHEMA;
     this.autoRegister = options.auto_register ?? true;
   }
@@ -158,7 +159,7 @@ export class ConduitAvroSerializer {
   public async deserialize(payload: Uint8Array): Promise<ConduitKafkaAvroMessage> {
     const { schema_id, body } = decodeHeader(payload);
     const type = await this.getOrLoadType(schema_id);
-    const record = type.fromBuffer(body) as ConduitAvroRecord;
+    const record = type.fromBuffer(Buffer.from(body)) as ConduitAvroRecord;
     return fromAvroRecord(record);
   }
 
@@ -194,7 +195,9 @@ export class ConduitAvroSerializer {
       return cached;
     }
 
-    const type = Type.forSchema(toSchemaObject(schema));
+    const type = Type.forSchema(
+      toSchemaObject(schema) as Parameters<typeof Type.forSchema>[0]
+    );
     this.typeCache.set(schemaId, type);
     return type;
   }
@@ -209,12 +212,16 @@ export class ConduitAvroSerializer {
       throw new Error("Schema registry does not support getById");
     }
 
-    const schema = await this.registry.getById(schemaId);
-    if (!schema) {
+    const entry = await this.registry.getById(schemaId);
+    if (!entry) {
       throw new Error(`Schema registry has no schema for id ${schemaId}`);
     }
 
-    const type = Type.forSchema(toSchemaObject(schema.schema as object | string));
+    const type = Type.forSchema(
+      toSchemaObject(entry.schema as object | string) as Parameters<
+        typeof Type.forSchema
+      >[0]
+    );
     this.typeCache.set(schemaId, type);
     return type;
   }
