@@ -86,6 +86,8 @@ await bus.dispatch(
 
 ## Documentation
 
+- **Browse locally (Docusaurus):** `pnpm docs:dev` — see [`website/README.md`](website/README.md).
+
 - [Docs index](docs/README.md)
 - [Getting started guide](docs/guides/getting-started.md)
 - [Provider selection guide](docs/guides/choosing-provider.md)

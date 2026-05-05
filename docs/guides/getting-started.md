@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide shows the smallest usable Conduit setup and how to evolve it.
+This guide shows the smallest usable Conduit setup and how to evolve it. For diagrams of the same pipeline, see [How Conduit works](how-conduit-works).
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ pnpm test
 ## 2. Wire your first bus
 
 ```ts
-import { ConduitBuilder, EnvelopeBuilder } from "@conduit/core";
-import { InMemoryDLQManager, InMemoryProvider } from "@conduit/provider-inmemory";
+import { ConduitBuilder, EnvelopeBuilder } from "@theconduit/core";
+import { InMemoryDLQManager, InMemoryProvider } from "@theconduit/provider-inmemory";
 
 const builder = new ConduitBuilder();
 

@@ -14,19 +14,24 @@ This folder contains guides, architecture artifacts, and decision records for Co
 - [Monolith to services migration](guides/migration-monolith-to-services.md): phased migration playbook.
 - [CLI guide](guides/cli.md): route/DLQ/schema/migration commands.
 
-## Package docs
+## Reference & packages (site)
 
-- [@theconduit/core](../packages/core/README.md)
-- [@theconduit/provider-inmemory](../packages/provider-inmemory/README.md)
-- [@theconduit/provider-outbox](../packages/provider-outbox/README.md)
-- [@theconduit/provider-kafka](../packages/provider-kafka/README.md)
-- [@theconduit/provider-rabbitmq](../packages/provider-rabbitmq/README.md)
-- [@theconduit/provider-nats](../packages/provider-nats/README.md)
-- [@theconduit/schema-registry](../packages/schema-registry/README.md)
-- [@theconduit/testing](../packages/testing/README.md)
-- [@theconduit/nestjs](../packages/nestjs/README.md)
-- [@theconduit/express](../packages/express/README.md)
-- [@theconduit/cli](../packages/cli/README.md)
+Technical package pages are grouped in the docs sidebar by topic (**Intro**, **Outbox**, **Kafka**, **RabbitMQ**, **NATS**, **Framework integrations**). Start from the [overview](packages/index.md), then open the page for the stack you use:
+
+- [Overview](packages/index.md)
+- [@theconduit/core](packages/core.md)
+- [@theconduit/provider-inmemory](packages/provider-inmemory.md)
+- [@theconduit/provider-outbox](packages/provider-outbox.md)
+- [@theconduit/provider-kafka](packages/provider-kafka.md)
+- [@theconduit/provider-rabbitmq](packages/provider-rabbitmq.md)
+- [@theconduit/provider-nats](packages/provider-nats.md)
+- [@theconduit/schema-registry](packages/schema-registry.md)
+- [@theconduit/nestjs](packages/nestjs.md)
+- [@theconduit/express](packages/express.md)
+- [@theconduit/testing](packages/testing.md)
+- [@theconduit/cli](packages/cli.md)
+
+README stubs in `packages/*/README.md` remain for npm/GitHub browsing.
 
 ## Architecture
 

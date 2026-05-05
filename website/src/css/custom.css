@@ -1,0 +1,206 @@
+/**
+ * Conduit docs — brand palette from logo:
+ * lilac #A78BFA, indigo #4F46E5 / #6366F1, violet #8B5CF6
+ */
+
+:root {
+  --conduit-lilac: #a78bfa;
+  --conduit-indigo-deep: #4f46e5;
+  --conduit-indigo: #6366f1;
+  --conduit-violet: #8b5cf6;
+  --conduit-ink: #1e1b4b;
+
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4f46e5;
+  --ifm-color-primary-darker: #4338ca;
+  --ifm-color-primary-darkest: #3730a3;
+  --ifm-color-primary-light: #818cf8;
+  --ifm-color-primary-lighter: #a5b4fc;
+  --ifm-color-primary-lightest: #c7d2fe;
+
+  --ifm-link-color: #4f46e5;
+  --ifm-menu-color-active: #4338ca;
+  --ifm-navbar-link-hover-color: #6366f1;
+  --ifm-footer-link-color: #c4b5fd;
+
+  --ifm-code-font-size: 95%;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #a78bfa;
+  --ifm-color-primary-dark: #8b5cf6;
+  --ifm-color-primary-darker: #7c3aed;
+  --ifm-color-primary-darkest: #6d28d9;
+  --ifm-color-primary-light: #c4b5fd;
+  --ifm-color-primary-lighter: #ddd6fe;
+  --ifm-color-primary-lightest: #ede9fe;
+
+  --ifm-link-color: #a5b4fc;
+  --ifm-menu-color-active: #c4b5fd;
+  --ifm-navbar-link-hover-color: #c4b5fd;
+  --ifm-footer-link-color: #c4b5fd;
+
+  --ifm-background-color: #0f0d1a;
+  --ifm-navbar-background-color: #16122a;
+  --ifm-footer-background-color: #12101e;
+}
+
+/* Hero (home) */
+.conduit-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 1rem 3.5rem;
+  text-align: center;
+  color: #f5f3ff;
+  background: linear-gradient(
+    145deg,
+    #1e1b4b 0%,
+    #312e81 42%,
+    #4c1d95 88%,
+    #3730a3 100%
+  );
+}
+
+.conduit-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(167, 139, 250, 0.22),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.conduit-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.conduit-hero__logo {
+  width: 7.5rem;
+  height: 7.5rem;
+  margin: 0 auto 1.25rem;
+  display: block;
+  filter: drop-shadow(0 12px 32px rgba(99, 102, 241, 0.45));
+}
+
+.conduit-hero__title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #faf5ff;
+  text-shadow: 0 1px 2px rgba(15, 13, 26, 0.35);
+}
+
+.conduit-hero__subtitle {
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: #e9d5ff;
+  opacity: 0.95;
+  margin-bottom: 0;
+}
+
+.conduit-hero__actions {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.conduit-hero .button--primary {
+  --ifm-button-background-color: #6366f1;
+  --ifm-button-border-color: #6366f1;
+  color: #faf5ff;
+}
+
+.conduit-hero .button--primary:hover {
+  --ifm-button-background-color: #818cf8;
+  --ifm-button-border-color: #818cf8;
+}
+
+.conduit-hero .button--outline {
+  border-color: rgba(196, 181, 253, 0.55);
+  color: #ede9fe;
+}
+
+.conduit-hero .button--outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #c4b5fd;
+  color: #fff;
+}
+
+/* Navbar logo sits on light/dark — subtle ring for contrast */
+.navbar__logo img {
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .navbar__logo img {
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.35));
+}
+
+/* Doc sidebar active item — lilac accent */
+.menu__link--active {
+  border-left-color: var(--conduit-indigo);
+}
+
+[data-theme="dark"] .menu__link--active {
+  border-left-color: var(--conduit-lilac);
+}
+
+/* Home — learning path cards */
+.conduit-learn__intro {
+  color: var(--ifm-color-emphasis-700);
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.conduit-card {
+  height: 100%;
+  padding: 1.25rem 1.35rem;
+  border-radius: 12px;
+  border: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.conduit-card:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 8px 28px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
+}
+
+.conduit-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--ifm-heading-color);
+}
+
+.conduit-card__text {
+  flex: 1 1 auto;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.conduit-card__link {
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+[data-theme="dark"] .conduit-card {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .conduit-card:hover {
+  box-shadow: 0 10px 36px rgba(167, 139, 250, 0.12);
+}

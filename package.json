@@ -37,6 +37,9 @@
     "benchmark": "node ./scripts/run-benchmarks.mjs",
     "benchmark:check": "node ./scripts/check-benchmarks.mjs",
     "clean": "pnpm -r clean",
+    "docs:dev": "pnpm --filter @conduit/docs-site start",
+    "docs:build": "pnpm --filter @conduit/docs-site build",
+    "docs:serve": "pnpm --filter @conduit/docs-site serve",
     "docs:api": "./scripts/generate-api-docs.sh",
     "deps:circular": "./scripts/check-circular-deps.sh",
     "publish:dry-run": "./scripts/publish-dry-run.sh"
